@@ -26,6 +26,17 @@ router.get('/:id', (req, res) => {
 
 // POST
 
+router.post('/', (req, res) => {
+    const newProject = req.body;
+    db.insert(newProject)
+        .then(project => {
+            res.status(200).json({ success: true, project });
+        })
+        .catch(err => {
+            res.status(500).json({ success: false, err });
+        })
+});
+
 // PUT 
 
 // DELETE
