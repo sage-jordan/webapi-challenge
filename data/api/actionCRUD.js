@@ -1,4 +1,8 @@
-const adb = require('./data/helpers/actionModel');
+const express = require('express');
+
+const router = express.Router();
+
+const adb = require('../helpers/actionModel.js');
 
 
 // ACTION CRUD
@@ -10,3 +14,5 @@ const adb = require('./data/helpers/actionModel');
 // PUT 
 
 // DELETE
+
+module.exports = router;

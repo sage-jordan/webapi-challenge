@@ -1,4 +1,8 @@
-const pdb = require('./data/helpers/projectModel.js');
+const express = require('express');
+
+const router = express.Router();
+
+const pdb = require('../helpers/projectModel');
 
 
 // PROJECT CRUD
@@ -10,3 +14,5 @@ const pdb = require('./data/helpers/projectModel.js');
 // PUT 
 
 // DELETE
+
+module.exports = router;
