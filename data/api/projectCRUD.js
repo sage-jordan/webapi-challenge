@@ -9,15 +9,11 @@ const db = require('../helpers/projectModel');
 
 // GET
 
-router.get('/:id', (req, res) => {
+router.get('/:id', validateProjectId, (req, res) => {
     const id = req.params.id;
     db.get(id)
         .then(project => {
-            if(project){
-                res.status(200).json({ success: true, project });
-            } else {
-                res.status(404).json({ success: false, message: `could not find a project with id: ${id}` });
-            }
+            res.status(200).json({ success: true, project });
         })
         .catch(err => {
             res.status(500).json({ success: false, err });
@@ -26,7 +22,7 @@ router.get('/:id', (req, res) => {
 
 // GET PROJECT ACTIONS
 
-router.get('/:id/actions', (req, res) => {
+router.get('/:id/actions', validateProjectId, (req, res) => {
     const id = req.params.id;
     db.getProjectActions(id)
         .then(actions => {
@@ -41,7 +37,7 @@ router.get('/:id/actions', (req, res) => {
         });
 })
 
-// POST
+// project
 
 router.post('/', (req, res) => {
     const newProject = req.body;
@@ -56,7 +52,7 @@ router.post('/', (req, res) => {
 
 // PUT 
 
-router.put('/:id', (req, res) => {
+router.put('/:id', validateProjectId, (req, res) => {
     const id = req.params.id;
     const changes = req.body;
     db.update(id, changes)
@@ -70,7 +66,7 @@ router.put('/:id', (req, res) => {
 
 // DELETE
 
-router.delete('/:id', (req, res) => {
+router.delete('/:id', validateProjectId, (req, res) => {
     const id = req.params.id;
     db.remove(id)
         .then(() => {
@@ -80,5 +76,23 @@ router.delete('/:id', (req, res) => {
             res.status(500).json({ success: false, err });
         });
 })
+
+// CUSTOM MIDDLEWARE 
+
+function validateProjectId(req, res, next) {
+    const id = req.params.id;
+    db.get(id)
+        .then(project => {
+            if(project) {
+                req.project = project;
+                next();
+            } else {
+                res.status(404).json({ message: "invalid project id" });
+            }
+        })
+        .catch(err => {
+            res.status(500).json({ error: "The project information could not be retrieved.", err });
+        });
+};
 
 module.exports = router;
