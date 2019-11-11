@@ -24,6 +24,23 @@ router.get('/:id', (req, res) => {
         })
 });
 
+// GET PROJECT ACTIONS
+
+router.get('/:id/actions', (req, res) => {
+    const id = req.params.id;
+    db.getProjectActions(id)
+        .then(actions => {
+            if(actions.length > 0){
+                res.status(200).json({ success: true, actions });
+            } else {
+                res.status(200).json({ success: true, message: `Project with id: ${id} does not have any acitons.`})
+            }
+        })
+        .catch(err => {
+            res.status(500).json({ success: false, err });
+        });
+})
+
 // POST
 
 router.post('/', (req, res) => {
