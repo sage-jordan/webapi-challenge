@@ -2,7 +2,7 @@ const express = require('express');
 
 const router = express.Router();
 
-const adb = require('../helpers/actionModel.js');
+const db = require('../helpers/actionModel.js');
 
 
 // ACTION CRUD
