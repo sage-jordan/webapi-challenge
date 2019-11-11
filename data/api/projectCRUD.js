@@ -16,7 +16,7 @@ router.get('/:id', (req, res) => {
             if(project){
                 res.status(200).json({ success: true, project });
             } else {
-                res.status(404).json({ success: false, message: `could not find a prject with id: ${id}` });
+                res.status(404).json({ success: false, message: `could not find a project with id: ${id}` });
             }
         })
         .catch(err => {
