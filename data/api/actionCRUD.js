@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 
 const db = require('../helpers/actionModel.js');
+const pdb = require('../helpers/projectModel');
 
 
 // ACTION CRUD
@@ -26,7 +27,7 @@ router.get('/:id', (req, res) => {
 
 // POST
 
-router.post('/', (req, res) => {
+router.post('/', validateAction, (req, res) => {
     const newAction = req.body;
     db.insert(newAction)
         .then(action => {
@@ -39,7 +40,7 @@ router.post('/', (req, res) => {
 
 // PUT 
 
-router.put('/:id', (req, res) => {
+router.put('/:id', validateActionId, (req, res) => {
     const id = req.params.id;
     const changes = req.body;
     db.update(id, changes)
@@ -63,5 +64,43 @@ router.delete('/:id', (req, res) => {
             res.status(500).json({ success: false, err });
         });
 })
+
+// CUSTOM MIDDLEWARE
+
+function validateActionId(req, res, next) {
+    const id = req.params.id;
+    db.get(id)
+        .then(action => {
+            if(action) {
+                req.action = action;
+                next();
+            } else {
+                res.status(404).json({ message: "invalid action id" });
+            }
+        })
+        .catch(err => {
+            res.status(500).json({ error: "The action information could not be retrieved.", err });
+        });
+};
+
+function validateAction(req, res, next) {
+    const action = req.body;
+    const id = action.project_id;
+    if(id && action.description && action.notes){
+        pdb.get(id)
+        .then(project => {
+            if(project){
+                next();
+            } else {
+                res.status(404).json({ success: false, message: `There is not project with id ${id}` });
+            }
+        })
+        .catch(err => {
+            res.stats(500).json({ success: false, err });
+        })
+    } else {
+        res.status(404).json({ success: false, message: `Please provide a valid project_id, description, and notes.`})
+    }
+}
 
 module.exports = router;
