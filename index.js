@@ -12,3 +12,39 @@ I need this code, just don't know where, perhaps should make some middleware, do
 
 Go code!
 */
+
+// SERVER SETUP
+const express = require('express');
+const server = express();
+const port = 4000;
+server.use(express.json());
+
+// ROUTERS 
+
+const projectRouter = require('./data/api/projectCRUD');
+const actionRouter = require('./data/api/actionCRUD');
+server.use('/project', projectRouter);
+server.use('/action', actionRouter);
+
+// HOME ROUTE
+
+server.get('/', (req, res) => {
+    res.send(`<h2>The Server is running!</h2>`)
+});
+
+// CUSTOM MIDDLEWARE
+function logger(req, res, next) {
+    console.log(`[${new Date().toString()}] ${req.method} to ${req.url}.`);
+    next();
+};
+server.use(logger);
+
+server.use('/', (req, res) => {
+    res.status(200).send('Express Running');
+});
+
+server.listen(port, () => {
+    console.log(`=== Server listening on port ${port} ===`);
+}) ;
+  
+module.exports = server;
